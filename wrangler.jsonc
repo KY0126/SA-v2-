@@ -1,0 +1,21 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "fju-smart-hub",
+  "compatibility_date": "2024-09-23",
+  "pages_build_output_dir": "./dist",
+  "compatibility_flags": ["nodejs_compat"],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "fju-smart-hub-production",
+      "database_id": "placeholder-replace-after-creation"
+    }
+  ],
+  "kv_namespaces": [
+    {
+      "binding": "KV",
+      "id": "placeholder-replace-after-creation",
+      "preview_id": "placeholder-replace-after-creation"
+    }
+  ]
+}
