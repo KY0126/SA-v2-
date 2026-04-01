@@ -257,6 +257,83 @@ app.get('/api/dashboard/:role', async (c) => {
 })
 
 // ─────────────────────────────────────────────
+// AI NAVIGATION QUERY (Mock Dify RAG)
+// ─────────────────────────────────────────────
+app.post('/api/ai/navigate', async (c) => {
+  const { message } = await c.req.json()
+  if (!message) return c.json({ error: '請輸入問題' }, 400)
+  // In production, call Dify API: POST https://api.dify.ai/v1/chat-messages
+  return c.json({
+    task_id: `nav-${Date.now()}`,
+    answer: `關於「${message}」，根據輔仁大學校園地圖及設施資料庫：焯炤館演講廳位於校園中央北側，容量300人。如需預約，請至少提前3天申請。`,
+    source: 'FJU Campus AI Navigator',
+    confidence: 0.92
+  })
+})
+
+// ─────────────────────────────────────────────
+// REGULATIONS RAG (Dify Knowledge Base)
+// ─────────────────────────────────────────────
+app.post('/api/ai/regulations', async (c) => {
+  const { query } = await c.req.json()
+  if (!query) return c.json({ error: '請輸入法規問題' }, 400)
+  return c.json({
+    task_id: `reg-${Date.now()}`,
+    answer: `依據《輔仁大學學生社團活動管理辦法》相關條文，針對「${query}」的規定如下...`,
+    sources: [
+      { title: '學生社團活動管理辦法', article: '第三條', relevance: 0.95 },
+      { title: '場地管理辦法', article: '第五條', relevance: 0.88 }
+    ],
+    confidence: 0.90
+  })
+})
+
+// ─────────────────────────────────────────────
+// VENUE BOOKING WORKFLOW RAG
+// ─────────────────────────────────────────────
+app.post('/api/ai/venue-workflow', async (c) => {
+  const { requirement } = await c.req.json()
+  if (!requirement) return c.json({ error: '請描述預約需求' }, 400)
+  return c.json({
+    task_id: `venue-${Date.now()}`,
+    workflow_steps: [
+      { step: 1, title: '志願序申請', desc: '填寫活動資訊與場地志願序', duration: '30分鐘審核' },
+      { step: 2, title: '衝突協商', desc: 'LINE Notify 通知，48小時協商', duration: '1-2天' },
+      { step: 3, title: '官方核定', desc: '課指組審核，發送PDF確認單', duration: '3-5天' }
+    ],
+    recommendation: `針對「${requirement}」，建議選擇焯炤館或學生活動中心，並提前7天申請。`,
+    confidence: 0.94
+  })
+})
+
+// ─────────────────────────────────────────────
+// CAMPUS MAP API
+// ─────────────────────────────────────────────
+app.get('/api/campus/buildings', async (c) => {
+  return c.json([
+    { id: 1, name: '焯炤館', type: 'auditorium', capacity: 300, accessible: true, elevator: false, restroom: true, reservable: true, lat: 25.033, lng: 121.433, desc: '主要演講廳，適合大型活動' },
+    { id: 2, name: '仁愛空間', type: 'meeting', capacity: 50, accessible: true, elevator: false, restroom: true, reservable: true, lat: 25.032, lng: 121.432, desc: '課指組辦公室旁，中型會議空間' },
+    { id: 3, name: '進修部演講廳', type: 'auditorium', capacity: 200, accessible: true, elevator: true, restroom: false, reservable: true, lat: 25.034, lng: 121.434, desc: '進修部主要講堂' },
+    { id: 4, name: '潛水艇的天空', type: 'creative', capacity: 30, accessible: false, elevator: false, restroom: false, reservable: true, lat: 25.031, lng: 121.431, desc: '創意工作坊空間' },
+    { id: 5, name: '圖書館研討室', type: 'study', capacity: 20, accessible: true, elevator: true, restroom: true, reservable: true, lat: 25.033, lng: 121.430, desc: '圖書館B1-6F均有無障礙設施' },
+    { id: 6, name: '體育館', type: 'sports', capacity: 500, accessible: true, elevator: false, restroom: true, reservable: false, lat: 25.030, lng: 121.432, desc: '籃球、羽球等體育活動' },
+    { id: 7, name: '學生活動中心', type: 'multipurpose', capacity: 100, accessible: true, elevator: true, restroom: true, reservable: true, lat: 25.032, lng: 121.435, desc: '社辦及多功能室' },
+    { id: 8, name: '宗倫樓', type: 'hall', capacity: 400, accessible: true, elevator: true, restroom: true, reservable: false, lat: 25.035, lng: 121.436, desc: '大禮堂及教室群' },
+  ])
+})
+
+app.get('/api/campus/accessibility', async (c) => {
+  return c.json({
+    ramps: ['焯炤館正門', '進修部演講廳', '仁愛空間', '學生活動中心', '宗倫樓'],
+    elevators: ['圖書館(B1-6F)', '行政大樓(1-5F)', '宗倫樓(1-4F)', '學生活動中心(1-3F)', '進修部(1-3F)'],
+    restrooms: ['焯炤館一樓', '圖書館各樓層', '學生活動中心', '醫學院', '體育館'],
+    parking: ['P1停車場入口（20個無障礙車位）', '圖書館旁停車區（5個）'],
+    total_accessible_buildings: 7,
+    last_updated: '2026-01-15'
+  })
+})
+
+// ─────────────────────────────────────────────
 // AI SCREENING (Dify Integration Mock)
 // ─────────────────────────────────────────────
 app.post('/api/ai/screen', async (c) => {
