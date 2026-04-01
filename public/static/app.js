@@ -1960,6 +1960,13 @@ function setLang(lang) {
   renderApp()
 }
 
+function changeLang() {
+  const langs = ['zh-TW', 'en', 'ja', 'ko', 'fr']
+  const idx = langs.indexOf(state.lang)
+  setLang(langs[(idx + 1) % langs.length])
+  toast(`語系已切換為：${state.lang}`, 'info')
+}
+
 function renderApp() {
   if (state.user) navigate(state.currentPage)
   else renderLogin()
