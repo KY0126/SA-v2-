@@ -1,163 +1,124 @@
-# FJU Smart Hub
-## 輔仁大學全方位校園管理與資源調度系統
-
-[![Deployed on Cloudflare Pages](https://img.shields.io/badge/Deployed-Cloudflare%20Pages-orange)](https://fju-smart-hub.pages.dev)
-[![Version](https://img.shields.io/badge/Version-3.0-blue)](https://github.com/KY0126/SA-v2-)
+# FJU Smart Hub v3.1
+## 輔仁大學全方位校園管理系統
 
 ---
 
-## 專案概覽
+## 🌐 系統預覽
+**前端 Demo URL**: https://3000-i12ven33yzeuey60x9hlh-2b54fc91.sandbox.novita.ai
 
-FJU Smart Hub 是整合 Hono/TypeScript、Cloudflare Pages、MySQL 8.0/D1 SQLite、Vue 3 與 Dify AI 中台的全端校園管理系統。
-
-### 核心目標
-- 解決輔仁大學校園場地/器材資源調度的行政痛點
-- 以 AI 智慧預審大幅降低課指組人工審核負擔
-- 建立完整的社團生命週期管理平台
+**GitHub**: https://github.com/KY0126/SA-v2-
 
 ---
 
-## 已完成功能
+## ✅ 已完成功能
 
-| 功能模組 | 狀態 |
-|---------|------|
-| 🏠 多角色儀表板（5種角色） | ✅ |
-| 📅 三階段場地預約流 | ✅ |
-| 🔧 器材借用 + TOTP 憑證 | ✅ |
-| 👥 社團管理 | ✅ |
-| 📢 動態活動牆 | ✅ |
-| 📆 全域行事曆 | ✅ |
-| 📋 E-Portfolio + PDF 匯出 | ✅ |
-| 🤖 Dify AI 智慧預審 | ✅ (Mock) |
-| 🤖 AI 企劃書生成器 | ✅ (Mock) |
-| 🌐 多語系（中/英/日/韓） | ✅ |
-| 👮 信用點數系統 | ✅ |
-| 🔒 Google OAuth + 2FA | ✅ (Demo) |
-| 👤 用戶管理頁 | ✅ |
-| 📊 系統規格書 (Word) | ✅ |
+### 🗺️ 校園地圖模組（v3.1 新增）
+- SVG 互動式校園地圖，標示所有主要建築
+- 無障礙設施完整標示：♿ 坡道 / 🛗 電梯 / 🚻 廁所 / P♿ 停車位
+- 三種篩選模式：全部 / 僅無障礙 / 可預約場地
+- 點擊建築查看詳情（含無障礙設施確認、預約入口）
+- 8棟主要建築詳細資訊列表
 
----
+### 🤖 三個 AI 介面（v3.1 新增）
 
-## API 端點說明
+#### AI 導覽查詢（Chat Interface）
+- 對話式介面，24/7 即時問答
+- 支援查詢：場地位置、預約流程、信用點數、無障礙設施、器材借用
+- FAQ 快捷問題（6個一鍵提問）
+- 對話歷史保存（Session內）
+- 快捷卡片跳轉至法規/預約RAG
 
-| 方法 | 路徑 | 說明 |
-|------|------|------|
-| GET | `/api/auth/me` | 取得目前用戶資訊 |
-| POST | `/api/auth/google` | Google OAuth 登入 |
-| GET | `/api/venues` | 取得場地列表 |
-| POST | `/api/reservations` | 新增場地預約（含 AI 預審）|
-| GET | `/api/reservations` | 取得預約列表 |
-| PATCH | `/api/reservations/:id/status` | 更新預約狀態 |
-| GET | `/api/clubs` | 取得社團列表 |
-| GET | `/api/clubs/:id` | 取得社團詳情 |
-| GET | `/api/equipment` | 取得器材列表 |
-| POST | `/api/equipment/borrow` | 申請器材借用 |
-| GET | `/api/activities?keyword=&tag=` | 搜尋活動 |
-| GET | `/api/calendar?month=2026-04` | 取得月份行事曆 |
-| GET | `/api/dashboard/:role` | 取得角色儀表板資料 |
-| GET | `/api/portfolio/:userId` | 取得 E-Portfolio |
-| GET | `/api/credit/:userId` | 取得信用點數紀錄 |
-| GET | `/api/users` | 取得用戶列表 (admin only) |
-| POST | `/api/ai/screen` | AI 智慧預審 |
-| POST | `/api/ai/generate-plan` | AI 企劃書生成 |
+#### 法規查詢 RAG
+- Dify RAG 知識庫搜尋
+- 自由文字查詢 + 8個常見問題
+- 回覆包含：信心度評分、引用來源
+- 知識庫：活動辦法、場地辦法、器材借用辦法
 
----
+#### 場地與器材預約流程 RAG
+- 三階段流程可視化（志願序→衝突協商→官方核定）
+- AI 根據需求規劃最佳預約路徑
+- 器材即時庫存表
+- 6種常見情境快捷
 
-## 技術架構
+### 📋 核心功能（v3.0）
+- **五角色儀表板**：學生/社團幹部/指導教授/課指組/資訊中心
+- **三階段場地預約**：AI預審 + 衝突協商(LINE Notify) + 官方核定(PDF+TOTP)
+- **器材借用管理**：即時庫存、TOTP QR Code 確認
+- **社團管理**：分類篩選、詳細資訊
+- **動態活動牆**：標籤篩選、即時搜尋
+- **全域行事曆**：月曆視圖 + 活動列表
+- **E-Portfolio**：技能標籤、活動記錄、信用點數歷史
+- **用戶管理**：管理員後台（admin/it_admin 角色）
+- **多語言**：繁中/英/日/韓/法 五語言支援
 
-```
-FJU Smart Hub
-├── 前端 (Frontend)
-│   ├── Vue 3 (CDN) + Tailwind CSS
-│   ├── Chart.js (統計圖表)
-│   ├── GSAP (動畫)
-│   └── vue-i18n (四國語系)
-│
-├── 後端 (Backend)
-│   ├── Hono Framework (Cloudflare Workers)
-│   ├── TypeScript (嚴格模式)
-│   └── REST API
-│
-├── 資料庫 (Database)
-│   ├── Cloudflare D1 SQLite (生產)
-│   ├── KV Namespace (快取/Session)
-│   └── R2 Object Storage (文件/圖片)
-│
-├── AI 中台 (AI Platform)
-│   ├── Dify Cloud (RAG + Workflow)
-│   └── Cloudflare Workers AI (Llama-3)
-│
-└── 安全防護 (Security)
-    ├── Cloudflare WAF
-    ├── Turnstile CAPTCHA
-    ├── Google OAuth (hd=cloud.fju.edu.tw)
-    └── 2FA TOTP (PHPGangsta)
-```
+### 🤖 AI 工具集
+- AI 企劃生成器（一鍵生成活動企劃書）
+- AI 申訴摘要（自動生成申訴書草稿）
+- 場地熱力圖（開發中）
 
 ---
 
-## 資料架構
+## 🛣️ API 端點
 
-### 主要資料表 (16張)
-- **users** - 使用者（含信用點數、JWT版本號）
-- **clubs** - 社團
-- **venues** - 場地
-- **reservations** - 預約申請（三階段狀態機）
-- **equipment** - 器材
-- **equipment_loans** - 器材借用記錄
-- **activities** - 活動
-- **credit_history** - 信用點數歷史
-- **ai_outbox** - AI 異步任務佇列
-- **portfolios** - E-Portfolio
-- 其他 6 張關聯表
-
----
-
-## 快速開始
-
-```bash
-# 安裝依賴
-npm install
-
-# 建置
-npm run build
-
-# 本地開發 (需 wrangler 登入)
-npm run dev:sandbox
-
-# 資料庫初始化
-npm run db:migrate:local
-npm run db:seed
-
-# 部署至 Cloudflare Pages
-npm run deploy
-```
+| Method | Endpoint | 說明 |
+|--------|----------|------|
+| GET | /api/venues | 場地列表 |
+| POST | /api/reservations | 建立預約 |
+| GET | /api/equipment | 器材庫存 |
+| POST | /api/equipment/borrow | 器材借用申請 |
+| GET | /api/clubs | 社團列表 |
+| GET | /api/dashboard/:role | 角色儀表板 |
+| **POST** | **/api/ai/navigate** | **AI 導覽查詢（v3.1）** |
+| **POST** | **/api/ai/regulations** | **法規 RAG 查詢（v3.1）** |
+| **POST** | **/api/ai/venue-workflow** | **預約流程 RAG（v3.1）** |
+| POST | /api/ai/screen | AI 風險預審 |
+| POST | /api/ai/generate-plan | AI 企劃生成 |
+| **GET** | **/api/campus/buildings** | **校園建築資訊（v3.1）** |
+| **GET** | **/api/campus/accessibility** | **無障礙設施清單（v3.1）** |
+| GET | /api/credit/:userId | 信用點數記錄 |
+| GET | /api/portfolio/:userId | E-Portfolio |
+| GET | /api/calendar | 行事曆 |
 
 ---
 
-## 部署資訊
+## 🏗️ 技術架構
 
-- **平台**: Cloudflare Pages
-- **技術棧**: Hono + TypeScript + Vue 3 + TailwindCSS + Dify AI
-- **狀態**: ✅ 開發完成，待正式部署
-- **最後更新**: 2026/03/31
-- **版本**: v3.0
-
----
-
-## 文件
-
-| 文件 | 路徑 |
+| 層級 | 技術 |
 |------|------|
-| 系統規格書 (Word) | `FJU_Smart_Hub_SA文件_v3.0.docx` |
-| 資料庫 Schema | `migrations/0001_initial_schema.sql` |
-| 測試資料 | `seed.sql` |
-| 系統架構 | 見 SA 文件第三章 |
+| **前端** | Vanilla JS (Vue3 CDN Style) + Chart.js + GSAP |
+| **後端** | Hono.js v4 (TypeScript) on Cloudflare Workers |
+| **資料庫** | Cloudflare D1 (SQLite) |
+| **快取** | Cloudflare KV |
+| **AI** | Dify AI 中間層（Mock 實作） |
+| **安全** | Cloudflare WAF + Turnstile + JWT + TOTP 2FA |
+| **通知** | LINE Notify + SMTP + SMS |
+| **地圖** | SVG 互動式地圖（可擴展 Mapbox） |
+| **語言** | 繁中 / English / 日本語 / 한국어 / Français |
 
 ---
 
-## 開發團隊
+## 📄 文件
 
-輔仁大學 資訊管理學系 第三十四屆專題  
-指導教授：陳大中 教授  
-GitHub: [KY0126/SA-v2-](https://github.com/KY0126/SA-v2-)
+- **系統規格書 v3.1**：`FJU_Smart_Hub_SA文件_v3.1.docx`（含自動目錄、5張系統圖）
+- **資料庫 Schema**：`migrations/0001_initial_schema.sql`
+- **測試資料**：`seed.sql`
+
+---
+
+## 📦 備份下載
+- 完整專案備份：https://www.genspark.ai/api/files/s/y3xq6vYK
+
+---
+
+## 🗓️ 版本記錄
+
+| 版本 | 日期 | 主要更新 |
+|------|------|----------|
+| v3.1 | 2026/04/01 | 校園地圖+無障礙設施+3個AI介面+SA文件v3.1 |
+| v3.0 | 2026/03/31 | 儀表板、E-Portfolio、多語言 |
+| v2.0 | 2026/02/20 | AI預審、信用點數系統 |
+| v1.0 | 2026/01/15 | 基礎場地預約 |
+
+---
+
+**部署平台**: Cloudflare Pages | **狀態**: ✅ 開發中
