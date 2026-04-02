@@ -440,6 +440,123 @@ app.get('/api/portfolio/:userId', async (c) => {
 })
 
 // ─────────────────────────────────────────────
+// MAP ELEMENTS (Dynamic Maintenance Status)
+// ─────────────────────────────────────────────
+app.get('/api/map/building/:id', async (c) => {
+  const id = parseInt(c.req.param('id'))
+  const buildings = [
+    { id: 1, name: '焯炤館', status: 'available', maintenance_note: null },
+    { id: 2, name: '仁愛空間', status: 'available', maintenance_note: null },
+    { id: 3, name: '進修部演講廳', status: 'maintenance', maintenance_note: '空調維修，預計 2026-04-15 完工' },
+    { id: 4, name: '潛水艇的天空', status: 'available', maintenance_note: null },
+    { id: 5, name: '圖書館研討室', status: 'available', maintenance_note: null },
+    { id: 6, name: '體育館', status: 'available', maintenance_note: null },
+    { id: 7, name: '學生活動中心', status: 'available', maintenance_note: null },
+    { id: 8, name: '宗倫樓', status: 'available', maintenance_note: null },
+    { id: 9, name: '行政大樓', status: 'available', maintenance_note: null },
+    { id: 10, name: '醫學院', status: 'available', maintenance_note: null },
+  ]
+  const bldg = buildings.find(b => b.id === id)
+  if (!bldg) return c.json({ error: 'Building not found' }, 404)
+  return c.json(bldg)
+})
+
+// ─────────────────────────────────────────────
+// CREDIT LOG API
+// ─────────────────────────────────────────────
+app.post('/api/credit/log', async (c) => {
+  const body = await c.req.json()
+  const { user_id, action, change, score_after, reason } = body
+  const { DB } = c.env
+  try {
+    await DB.prepare(`
+      INSERT INTO credit_logs (user_id, action, change_amount, score_after, reason, created_at)
+      VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+    `).bind(user_id, action, change, score_after, reason).run()
+  } catch {}
+  return c.json({ success: true, logged_at: new Date().toISOString() })
+})
+
+app.get('/api/credit/logs/:userId', async (c) => {
+  const userId = c.req.param('userId')
+  const { DB } = c.env
+  try {
+    const results = await DB.prepare('SELECT * FROM credit_logs WHERE user_id = ? ORDER BY created_at DESC LIMIT 50').bind(userId).all()
+    return c.json(results.results)
+  } catch {
+    return c.json([
+      { id: 1, action: '準時簽到', change_amount: 2, score_after: 90, reason: '活動出席', created_at: '2026-03-01' },
+      { id: 2, action: '活動未簽到', change_amount: -5, score_after: 85, reason: '無故缺席', created_at: '2026-03-15' },
+      { id: 3, action: '及時取消預約', change_amount: 3, score_after: 88, reason: '負責任行為', created_at: '2026-03-28' },
+    ])
+  }
+})
+
+// ─────────────────────────────────────────────
+// NOTIFICATION TRACKING (Read Receipt / track.php)
+// ─────────────────────────────────────────────
+app.post('/api/notifications/track', async (c) => {
+  const body = await c.req.json()
+  const { token, timestamp } = body
+  const ip = c.req.header('CF-Connecting-IP') || c.req.header('X-Forwarded-For') || '127.0.0.1'
+  const { DB } = c.env
+  try {
+    await DB.prepare(`
+      INSERT INTO notification_logs (token, read_at, ip_address, user_agent)
+      VALUES (?, ?, ?, ?)
+    `).bind(token, timestamp || new Date().toISOString(), ip, c.req.header('User-Agent') || '').run()
+  } catch {}
+  return c.json({ success: true, token, ip, tracked_at: new Date().toISOString() })
+})
+
+app.get('/api/notifications/logs', async (c) => {
+  const { DB } = c.env
+  try {
+    const results = await DB.prepare('SELECT * FROM notification_logs ORDER BY read_at DESC LIMIT 100').all()
+    return c.json(results.results)
+  } catch {
+    return c.json([
+      { token: 'tk001', read_at: '2026-04-02T10:00:00Z', ip_address: '140.136.100.1' },
+      { token: 'tk002', read_at: '2026-04-02T10:05:00Z', ip_address: '140.136.100.2' },
+    ])
+  }
+})
+
+// ─────────────────────────────────────────────
+// CONFLICT / NEGOTIATION API
+// ─────────────────────────────────────────────
+app.get('/api/conflicts', async (c) => {
+  return c.json([
+    { id: 'N001', venue: '焯炤館演講廳', date: '2026-04-10', time: '09:00-12:00', party1: '資管系學會', party2: '攝影社', status: 'pending', created_at: '2026-04-01' },
+    { id: 'N002', venue: '仁愛空間', date: '2026-04-12', time: '14:00-17:00', party1: '籃球社', party2: '服務隊', status: 'negotiating', created_at: '2026-04-02' },
+  ])
+})
+
+app.patch('/api/conflicts/:id/resolve', async (c) => {
+  const id = c.req.param('id')
+  const body = await c.req.json()
+  const { resolution, winner_party } = body
+  const { DB } = c.env
+  try {
+    await DB.prepare(`UPDATE conflicts SET status='resolved', resolution=?, winner_party=?, resolved_at=CURRENT_TIMESTAMP WHERE id=?`).bind(resolution, winner_party, id).run()
+  } catch {}
+  return c.json({ id, status: 'resolved', resolution, resolved_at: new Date().toISOString() })
+})
+
+app.post('/api/conflicts/:id/penalty', async (c) => {
+  const id = c.req.param('id')
+  const body = await c.req.json()
+  const { user_id, reason } = body
+  const { DB } = c.env
+  // Deduct 10 credit points
+  try {
+    await DB.prepare('UPDATE users SET credit_score = MAX(0, credit_score - 10) WHERE id = ?').bind(user_id).run()
+    await DB.prepare('INSERT INTO credit_logs (user_id, action, change_amount, score_after, reason) SELECT ?, ?, -10, credit_score, ? FROM users WHERE id = ?').bind(user_id, '協商逾期罰款', reason || '6分鐘無法達成協議', user_id).run()
+  } catch {}
+  return c.json({ conflict_id: id, penalty: -10, reason: reason || '協商超時6分鐘', applied_at: new Date().toISOString() })
+})
+
+// ─────────────────────────────────────────────
 // MAIN FRONTEND ROUTE
 // ─────────────────────────────────────────────
 app.get('/', (c) => {
@@ -503,14 +620,37 @@ function getMainHTML(): string {
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>FJU Smart Hub | 輔仁大學校園管理系統</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons -->
   <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet"/>
+  <!-- Leaflet.js (interactive map) -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <!-- GSAP (animations) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <!-- Axios -->
   <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+  <!-- App Styles -->
   <link href="/static/styles.css" rel="stylesheet"/>
+  <style>
+    body { margin: 0; padding: 0; overflow: hidden; }
+    #landing-page { transition: opacity 0.4s ease; }
+    .leaflet-control-attribution { font-size: 10px; }
+  </style>
 </head>
-<body class="bg-gray-50 min-h-screen font-sans">
-  <div id="app"></div>
+<body>
+  <!-- Landing Page -->
+  <div id="landing-page" style="position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;"></div>
+  <!-- Login Page -->
+  <div id="login-page">
+    <div class="login-card" id="login-card">
+      <div id="login-body"></div>
+    </div>
+  </div>
+  <!-- Main App Root -->
+  <div id="app-root"></div>
+  <!-- App Script -->
   <script src="/static/app.js"></script>
 </body>
 </html>`
