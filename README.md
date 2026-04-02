@@ -1,124 +1,118 @@
-# FJU Smart Hub v3.1
-## 輔仁大學全方位校園管理系統
+# FJU Smart Hub v4.0
+## 輔仁大學校園智慧管理系統
 
 ---
 
-## 🌐 系統預覽
-**前端 Demo URL**: https://3000-i12ven33yzeuey60x9hlh-2b54fc91.sandbox.novita.ai
-
-**GitHub**: https://github.com/KY0126/SA-v2-
+## 🌐 URLs
+- **沙箱 Demo**: https://3000-i12ven33yzeuey60x9hlh-2b54fc91.sandbox.novita.ai
+- **GitHub**: https://github.com/KY0126/SA-v2-
 
 ---
 
 ## ✅ 已完成功能
 
-### 🗺️ 校園地圖模組（v3.1 新增）
-- SVG 互動式校園地圖，標示所有主要建築
-- 無障礙設施完整標示：♿ 坡道 / 🛗 電梯 / 🚻 廁所 / P♿ 停車位
-- 三種篩選模式：全部 / 僅無障礙 / 可預約場地
-- 點擊建築查看詳情（含無障礙設施確認、預約入口）
-- 8棟主要建築詳細資訊列表
+### 🎬 動畫引導頁（Landing Page）
+- 深藍漸層背景 + 金色粒子浮動動效（20顆）
+- 大學 Logo 光環脈衝動畫（CSS @keyframes）
+- 5張功能展示卡：地圖、AI協商、行事曆、信用制、已讀回條
+- 進入按鈕 fade out → 顯示登入頁
 
-### 🤖 三個 AI 介面（v3.1 新增）
+### 🔐 登入系統（非 Landing 即為登入）
+- 5種角色選擇：學生、社團幹部、指導教授、行政人員、IT管理員
+- 僅限 @cloud.fju.edu.tw 帳號（Google OAuth 示範）
+- 2FA：TOTP/SMS 設計（JWT + HttpOnly Cookie）
 
-#### AI 導覽查詢（Chat Interface）
-- 對話式介面，24/7 即時問答
-- 支援查詢：場地位置、預約流程、信用點數、無障礙設施、器材借用
-- FAQ 快捷問題（6個一鍵提問）
-- 對話歷史保存（Session內）
-- 快捷卡片跳轉至法規/預約RAG
+### 📐 Bento Grid 佈局（60-30-10 配色）
+- **Header**：大學 Logo ＋ 浮動 Google Maps 風格搜尋列（含高亮）＋ 通知鈴鐺（紅點）＋ 頭像選單
+- **左側欄（30%）**：信用積分儀表板、各學院消息卡、待協商清單（計時器）、功能快捷格
+- **右主區（70%）**：Leaflet 地圖 Base Layer + 玻璃態行事曆 Floating Layer
 
-#### 法規查詢 RAG
-- Dify RAG 知識庫搜尋
-- 自由文字查詢 + 8個常見問題
-- 回覆包含：信心度評分、引用來源
-- 知識庫：活動辦法、場地辦法、器材借用辦法
+### 🗺️ Leaflet.js 互動校園地圖
+- OpenStreetMap 底圖，10 棟建築標記（藍=正常 / 紅=維護中）
+- 無障礙標記：金點（坡道）、綠方（電梯）、紫圓（廁所）、橙菱（停車）
+- 篩選：全部 / 無障礙 / 可預約 / 維護中
+- **側欄 click → flyTo** 平滑飛行至目標建築
+- **building_id AJAX** (`GET /api/map/building/:id`) → 即時查詢 `map_elements` 維護狀態
+- 點擊 Popup 可直接開啟預約表單
 
-#### 場地與器材預約流程 RAG
-- 三階段流程可視化（志願序→衝突協商→官方核定）
-- AI 根據需求規劃最佳預約路徑
-- 器材即時庫存表
-- 6種常見情境快捷
+### 📅 玻璃態行事曆面板（Glassmorphism）
+- `backdrop-filter: blur(20px)` 玻璃效果，40% 寬，右側對齊
+- GSAP 動畫：translateX 105% → 0，0.4s cubic-bezier
+- 月份導航，彩色事件點（綠=已核准 / 金=待審核 / 紅=衝突）
+- 點擊衝突日期 → 自動彈出協商對話框
+- 「開啟行事曆管理頁面」跳轉全月格狀視圖
 
-### 📋 核心功能（v3.0）
-- **五角色儀表板**：學生/社團幹部/指導教授/課指組/資訊中心
-- **三階段場地預約**：AI預審 + 衝突協商(LINE Notify) + 官方核定(PDF+TOTP)
-- **器材借用管理**：即時庫存、TOTP QR Code 確認
-- **社團管理**：分類篩選、詳細資訊
-- **動態活動牆**：標籤篩選、即時搜尋
-- **全域行事曆**：月曆視圖 + 活動列表
-- **E-Portfolio**：技能標籤、活動記錄、信用點數歷史
-- **用戶管理**：管理員後台（admin/it_admin 角色）
-- **多語言**：繁中/英/日/韓/法 五語言支援
+### 🤝 AI 衝突協商機制（3/6 分鐘規則）
+- **3分鐘規則**：GPT-4 介入，提供 3 項具體建議
+- **6分鐘規則**：強制處置 → 扣 10 信用分 + 紅燈閃爍 + 關閉
+- 語意過濾器：沉默 30秒 → 警告訊息
+- 「協商完成」→ 更新 `conflicts` 表 + 加 2 分 + 跳轉行事曆管理
+- 完整計時器 UI（MM:SS 顯示，逾期後閃爍）
 
-### 🤖 AI 工具集
-- AI 企劃生成器（一鍵生成活動企劃書）
-- AI 申訴摘要（自動生成申訴書草稿）
-- 場地熱力圖（開發中）
+### 🔔 已讀回條追蹤（Read Receipt）
+- 每則通知含唯一 token
+- POST /api/notifications/track → 記錄 timestamp + IP
+- **重要通知**：10秒強制 Modal Overlay，倒數後啟用確認鈕
+- `notification_logs` 表完整記錄
 
----
-
-## 🛣️ API 端點
-
-| Method | Endpoint | 說明 |
-|--------|----------|------|
-| GET | /api/venues | 場地列表 |
-| POST | /api/reservations | 建立預約 |
-| GET | /api/equipment | 器材庫存 |
-| POST | /api/equipment/borrow | 器材借用申請 |
-| GET | /api/clubs | 社團列表 |
-| GET | /api/dashboard/:role | 角色儀表板 |
-| **POST** | **/api/ai/navigate** | **AI 導覽查詢（v3.1）** |
-| **POST** | **/api/ai/regulations** | **法規 RAG 查詢（v3.1）** |
-| **POST** | **/api/ai/venue-workflow** | **預約流程 RAG（v3.1）** |
-| POST | /api/ai/screen | AI 風險預審 |
-| POST | /api/ai/generate-plan | AI 企劃生成 |
-| **GET** | **/api/campus/buildings** | **校園建築資訊（v3.1）** |
-| **GET** | **/api/campus/accessibility** | **無障礙設施清單（v3.1）** |
-| GET | /api/credit/:userId | 信用點數記錄 |
-| GET | /api/portfolio/:userId | E-Portfolio |
-| GET | /api/calendar | 行事曆 |
+### ⭐ 信用積分系統
+- 協商完成 +2 / 逾期罰款 -10 / 其他行為積分
+- `credit_logs` 表完整紀錄（action, change_amount, score_after, reason）
+- 側欄即時顯示信用條（Vatican Gold 進度條）
+- 管理員頁面可查看完整信用扣分記錄
 
 ---
 
-## 🏗️ 技術架構
+## 📋 功能模組列表
 
-| 層級 | 技術 |
-|------|------|
-| **前端** | Vanilla JS (Vue3 CDN Style) + Chart.js + GSAP |
-| **後端** | Hono.js v4 (TypeScript) on Cloudflare Workers |
-| **資料庫** | Cloudflare D1 (SQLite) |
-| **快取** | Cloudflare KV |
-| **AI** | Dify AI 中間層（Mock 實作） |
-| **安全** | Cloudflare WAF + Turnstile + JWT + TOTP 2FA |
-| **通知** | LINE Notify + SMTP + SMS |
-| **地圖** | SVG 互動式地圖（可擴展 Mapbox） |
-| **語言** | 繁中 / English / 日本語 / 한국어 / Français |
-
----
-
-## 📄 文件
-
-- **系統規格書 v3.1**：`FJU_Smart_Hub_SA文件_v3.1.docx`（含自動目錄、5張系統圖）
-- **資料庫 Schema**：`migrations/0001_initial_schema.sql`
-- **測試資料**：`seed.sql`
+| 模組 | 頁面路由 | 狀態 |
+|------|---------|------|
+| 動畫引導頁 | Landing | ✅ |
+| 登入（角色選擇） | Login | ✅ |
+| 儀表板 | /dashboard | ✅ |
+| 校園地圖 + 行事曆 | /map | ✅ |
+| 三階段場地預約 | /reservation | ✅ |
+| 器材借用 | /equipment | ✅ |
+| 社團管理 | /clubs | ✅ |
+| 活動牆 | /activities | ✅ |
+| AI 工具（導覽/法規/流程/企劃） | /aitools | ✅ |
+| E-Portfolio | /portfolio | ✅ |
+| 用戶管理（管理員） | /users | ✅ |
+| 行事曆管理頁面 | /cal-management | ✅ |
+| 系統設定 | /settings | ✅ |
 
 ---
 
-## 📦 備份下載
-- 完整專案備份：https://www.genspark.ai/api/files/s/y3xq6vYK
+## 🔌 API 端點彙整
+
+### 新增端點（v4.0）
+| Method | Path | 說明 |
+|--------|------|------|
+| GET | /api/map/building/:id | 動態建築維護狀態（map_elements） |
+| POST | /api/credit/log | 記錄信用變動 → credit_logs |
+| GET | /api/credit/logs/:userId | 取得信用記錄 |
+| POST | /api/notifications/track | 已讀回條（記錄IP+時間） |
+| GET | /api/notifications/logs | 取得已讀紀錄 |
+| GET | /api/conflicts | 衝突清單 |
+| PATCH | /api/conflicts/:id/resolve | 解決衝突 |
+| POST | /api/conflicts/:id/penalty | 施加罰款（-10分） |
 
 ---
 
-## 🗓️ 版本記錄
+## 🗄️ 資料庫架構（D1 + KV + R2）
 
-| 版本 | 日期 | 主要更新 |
-|------|------|----------|
-| v3.1 | 2026/04/01 | 校園地圖+無障礙設施+3個AI介面+SA文件v3.1 |
-| v3.0 | 2026/03/31 | 儀表板、E-Portfolio、多語言 |
-| v2.0 | 2026/02/20 | AI預審、信用點數系統 |
-| v1.0 | 2026/01/15 | 基礎場地預約 |
+**主要資料表**：users, clubs, venues, reservations, conflicts, credit_logs, notification_logs, map_elements, equipment, equipment_loans, activities, portfolios, portfolio_entries
+
+**Migration 檔案**：
+- `migrations/0001_initial_schema.sql` - 初始架構
+- `migrations/0002_credit_and_notif_logs.sql` - 信用日誌、通知追蹤、衝突、地圖元素
 
 ---
 
-**部署平台**: Cloudflare Pages | **狀態**: ✅ 開發中
+## 🚀 部署資訊
+
+- **平台**: Cloudflare Pages + Workers
+- **Framework**: Hono v4 + TypeScript
+- **版本**: v4.0
+- **最後更新**: 2026-04-02
+- **規格書**: FJU_Smart_Hub_SA文件_v4.0.docx（含自動目錄、系統架構圖、Mermaid流程圖、完整ER圖、API規格）
