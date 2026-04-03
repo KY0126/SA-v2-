@@ -258,41 +258,305 @@ function refreshUILabels() {
 }
 
 // ════════════════════════════════════════════
-// LANDING PAGE
+// LANDING PAGE (Full Scroll-Driven with GSAP)
 // ════════════════════════════════════════════
 function renderLanding() {
   const page = document.getElementById('landing-page')
   if (!page) return
+
+  page.style.overflow = 'auto'
+  page.style.flexDirection = 'column'
+  page.style.alignItems = 'stretch'
+  page.style.justifyContent = 'flex-start'
+  page.style.height = '100vh'
+
+  page.innerHTML = `
+    <!-- Section 0: Hero -->
+    <section class="landing-hero">
+      <div class="landing-bg-particles" id="particles-container"></div>
+      <!-- Activity Announcement Carousel -->
+      <div class="landing-carousel" id="landing-carousel">
+        <div class="carousel-track" id="carousel-track">
+          <div class="carousel-slide"><span class="carousel-badge">🔥 即將舉辦</span> 2026 資管盃程式競賽 - 4月20日 焯炤館</div>
+          <div class="carousel-slide"><span class="carousel-badge">📢 報名開放</span> AI 時代創業論壇 - 4月25日 進修部演講廳</div>
+          <div class="carousel-slide"><span class="carousel-badge">🎨 展覽開始</span> 春季攝影展 - 圖書館大廳 即日起至4月20日</div>
+          <div class="carousel-slide"><span class="carousel-badge">⭐ 幹部招募</span> 攝影社、服務隊、創業研究社 歡迎加入</div>
+          <div class="carousel-slide"><span class="carousel-badge">🏆 最新公告</span> 113學年度社團評鑑優良名單公佈</div>
+        </div>
+      </div>
+      <!-- Hero Main Content -->
+      <div class="hero-content">
+        <div class="landing-logo-ring" id="landing-logo">
+          <img src="https://www.fju.edu.tw/static/img/logo_fju_en.png" class="landing-logo-img"
+            onerror="this.style.display='none'; this.parentNode.innerHTML='<span style=\\'font-size:2.5rem;\\'>🎓</span>'" />
+        </div>
+        <div class="landing-title" id="landing-title">FJU Smart Hub</div>
+        <div class="landing-subtitle" id="landing-subtitle">輔仁大學校園智慧管理系統 v4.0</div>
+        <div class="landing-gold-line" id="landing-gold-line"></div>
+        <p class="hero-tagline" id="hero-tagline">整合 AI・場地預約・社團管理・信用積分，打造智慧校園生活</p>
+        <div class="hero-cta-group">
+          <button class="landing-enter-btn" onclick="showLogin()">🚀 立即體驗系統</button>
+          <button class="hero-scroll-btn" onclick="scrollToFeatures()">了解更多 ↓</button>
+        </div>
+      </div>
+      <!-- Shiba Inu Mascot -->
+      <div class="hero-shiba">🐕</div>
+      <!-- Scroll hint -->
+      <div class="landing-scroll-hint" id="scroll-hint">向下滑動探索 ↓</div>
+    </section>
+
+    <!-- Section 1: Pain Points (3-column cards) -->
+    <section class="landing-section pain-section" id="section-pain">
+      <div class="section-inner">
+        <div class="section-label">痛點解析</div>
+        <h2 class="section-title">您是否也面臨這些困擾？</h2>
+        <p class="section-subtitle">FJU Smart Hub 為輔仁大學課指組與學生設計，一次解決所有問題</p>
+        <div class="pain-cards">
+          <div class="pain-card" data-pain="1">
+            <div class="pain-icon">😤</div>
+            <h3>場地預約衝突不斷</h3>
+            <p>多個社團搶同一場地，協商曠日廢時，行政效率低落</p>
+            <div class="pain-arrow">→</div>
+            <div class="pain-solution">AI 三階段預約・自動協商・6分鐘強制處理</div>
+          </div>
+          <div class="pain-card" data-pain="2">
+            <div class="pain-icon">📝</div>
+            <h3>活動申請流程繁瑣</h3>
+            <p>手動填寫紙本表單、等待審核、法規不熟悉導致退件</p>
+            <div class="pain-arrow">→</div>
+            <div class="pain-solution">AI 智慧預審・RAG 法規查詢・PDF 自動產出</div>
+          </div>
+          <div class="pain-card" data-pain="3">
+            <div class="pain-icon">📊</div>
+            <h3>學生活動紀錄難以管理</h3>
+            <p>參加活動無法留存紀錄，幹部訓練成效難以量化</p>
+            <div class="pain-arrow">→</div>
+            <div class="pain-solution">E-Portfolio 職能雷達・數位時光膠囊・幹部證書</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 2: 10 Feature Pillars (Bento Grid) -->
+    <section class="landing-section features-section" id="section-features">
+      <div class="section-inner">
+        <div class="section-label">核心功能</div>
+        <h2 class="section-title">十大智慧功能支柱</h2>
+        <p class="section-subtitle">全方位整合，覆蓋校園管理的每個環節</p>
+        <div class="features-bento">
+          <div class="bento-card large" data-feature="1">
+            <div class="bento-icon">🗺️</div>
+            <div class="bento-content">
+              <h3>互動式校園地圖</h3>
+              <p>Leaflet.js 全螢幕地圖 + SVG Overlay，即時維修狀態，點擊建築 flyTo 動畫，無障礙設施標記</p>
+            </div>
+          </div>
+          <div class="bento-card" data-feature="2">
+            <div class="bento-icon">🤖</div>
+            <div class="bento-content">
+              <h3>AI 智慧預審</h3>
+              <p>Dify RAG 比對法規，Medium/High 風險標記</p>
+            </div>
+          </div>
+          <div class="bento-card" data-feature="3">
+            <div class="bento-icon">🤝</div>
+            <div class="bento-content">
+              <h3>3/6 分鐘協商機制</h3>
+              <p>GPT-4 介入 · 紅光扣分動畫</p>
+            </div>
+          </div>
+          <div class="bento-card" data-feature="4">
+            <div class="bento-icon">📋</div>
+            <div class="bento-content">
+              <h3>E-Portfolio 履歷</h3>
+              <p>職能標籤 · PDF 匯出 · 雷達圖</p>
+            </div>
+          </div>
+          <div class="bento-card" data-feature="5">
+            <div class="bento-icon">📅</div>
+            <div class="bento-content">
+              <h3>玻璃行事曆</h3>
+              <p>GSAP 右滑 · 場地衝突高亮</p>
+            </div>
+          </div>
+          <div class="bento-card" data-feature="6">
+            <div class="bento-icon">⭐</div>
+            <div class="bento-content">
+              <h3>信用積分系統</h3>
+              <p>低於60分強制登出 · 完整日誌</p>
+            </div>
+          </div>
+          <div class="bento-card" data-feature="7">
+            <div class="bento-icon">📢</div>
+            <div class="bento-content">
+              <h3>動態活動牆</h3>
+              <p>標籤搜尋 · 即時更新</p>
+            </div>
+          </div>
+          <div class="bento-card" data-feature="8">
+            <div class="bento-icon">🔔</div>
+            <div class="bento-content">
+              <h3>已讀回條追蹤</h3>
+              <p>10秒強制彈窗 · IP+時間戳記錄</p>
+            </div>
+          </div>
+          <div class="bento-card" data-feature="9">
+            <div class="bento-icon">🌐</div>
+            <div class="bento-content">
+              <h3>五國語言 i18n</h3>
+              <p>繁中 · 簡中 · EN · 日 · 韓</p>
+            </div>
+          </div>
+          <div class="bento-card" data-feature="10">
+            <div class="bento-icon">🔒</div>
+            <div class="bento-content">
+              <h3>全方位 2FA 安全</h3>
+              <p>TOTP · SMS · JWT HttpOnly Cookie</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 3: Role Testimonials (Circle Avatar Carousel) -->
+    <section class="landing-section testimonials-section" id="section-testimonials">
+      <div class="section-inner">
+        <div class="section-label">使用者回饋</div>
+        <h2 class="section-title">各角色用戶的真實體驗</h2>
+        <div class="testimonials-carousel" id="testimonials-carousel">
+          <div class="testimonial-card active">
+            <div class="testimonial-avatar">👨‍🎓</div>
+            <div class="testimonial-name">王小明・學生</div>
+            <div class="testimonial-text">「以前申請場地要跑好幾個辦公室，現在線上三步驟搞定，AI 還會幫我檢查法規，再也不怕申請被退件了！」</div>
+            <div class="testimonial-stars">★★★★★</div>
+          </div>
+          <div class="testimonial-card">
+            <div class="testimonial-avatar">🎭</div>
+            <div class="testimonial-name">李美華・社團幹部</div>
+            <div class="testimonial-text">「衝突協商功能超強！以前跟其他社團搶場地要靠人脈，現在 AI 自動幫我們找到最佳解，還加了 2 分信用！」</div>
+            <div class="testimonial-stars">★★★★★</div>
+          </div>
+          <div class="testimonial-card">
+            <div class="testimonial-avatar">👨‍🏫</div>
+            <div class="testimonial-name">陳志偉・指導教授</div>
+            <div class="testimonial-text">「學生職能成長雷達圖讓我一目了然，期末評鑑不再耗費大量時間整理報告，效率提升了 60%。」</div>
+            <div class="testimonial-stars">★★★★☆</div>
+          </div>
+          <div class="testimonial-card">
+            <div class="testimonial-avatar">⚙️</div>
+            <div class="testimonial-name">林行政・行政人員</div>
+            <div class="testimonial-text">「AI 智慧預審幫我過濾了 80% 的問題申請，讓我專注在真正需要人工判斷的案件，工作效率大幅提升。」</div>
+            <div class="testimonial-stars">★★★★★</div>
+          </div>
+        </div>
+        <div class="testimonial-dots" id="testimonial-dots">
+          <span class="t-dot active" onclick="goToTestimonial(0)"></span>
+          <span class="t-dot" onclick="goToTestimonial(1)"></span>
+          <span class="t-dot" onclick="goToTestimonial(2)"></span>
+          <span class="t-dot" onclick="goToTestimonial(3)"></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 4: Live News Ticker -->
+    <section class="landing-news-ticker">
+      <div class="ticker-label">📡 即時快訊</div>
+      <div class="ticker-track" id="ticker-track">
+        <span class="ticker-item">🏆 113學年下學期社團評鑑優良名單已公佈</span>
+        <span class="ticker-item">⚠️ 焯炤館演講廳 4/8-4/14 空調維修暫停使用</span>
+        <span class="ticker-item">📝 AI 時代創業論壇 4/25 報名倒數 3 天</span>
+        <span class="ticker-item">🎓 幹部知能研習 5/3 開放報名，信用點數 +5</span>
+        <span class="ticker-item">📦 器材借用系統升級，新增 GPS 定位追蹤功能</span>
+        <span class="ticker-item">🔐 系統安全更新：已攔截 127 次異常登入嘗試</span>
+      </div>
+    </section>
+
+    <!-- Enter Button (fixed bottom) -->
+    <div class="landing-enter-fixed" id="enter-fixed">
+      <button class="landing-enter-btn pulse" onclick="showLogin()">🚀 進入 FJU Smart Hub</button>
+    </div>
+  `
+
+  // Create floating particles
+  const container = document.getElementById('particles-container')
+  for (let i = 0; i < 25; i++) {
+    const p = document.createElement('div')
+    p.className = 'particle'
+    const size = Math.random() * 30 + 10
+    p.style.cssText = `width:${size}px;height:${size}px;left:${Math.random()*100}%;animation-duration:${Math.random()*15+10}s;animation-delay:${Math.random()*10}s;opacity:${Math.random()*0.3+0.1};`
+    container.appendChild(p)
+  }
+
+  // GSAP Hero Animations
+  if (window.gsap) {
+    gsap.registerPlugin(window.ScrollTrigger, window.TextPlugin)
+
+    gsap.from('#landing-logo', { scale: 0, opacity: 0, duration: 1, ease: 'back.out(1.7)', delay: 0.3 })
+    gsap.from('#landing-title', { y: 50, opacity: 0, duration: 0.8, ease: 'power3.out', delay: 0.6 })
+    gsap.from('#landing-subtitle', { y: 30, opacity: 0, duration: 0.8, ease: 'power3.out', delay: 0.8 })
+    gsap.from('#landing-gold-line', { scaleX: 0, duration: 0.6, ease: 'power2.out', delay: 1.0 })
+    gsap.from('#hero-tagline', { y: 20, opacity: 0, duration: 0.8, delay: 1.1 })
+    gsap.from('.hero-cta-group', { y: 20, opacity: 0, duration: 0.8, delay: 1.3 })
+    gsap.from('.hero-shiba', { x: 100, opacity: 0, duration: 1, ease: 'elastic.out(1, 0.5)', delay: 1.5 })
+    gsap.from('#scroll-hint', { y: -10, opacity: 0, duration: 0.8, delay: 2, repeat: -1, yoyo: true })
+
+    // ScrollTrigger animations for sections
+    gsap.utils.toArray('.pain-card').forEach((card, i) => {
+      gsap.from(card, {
+        scrollTrigger: { trigger: card, scroller: page, start: 'top 85%' },
+        x: i % 2 === 0 ? -60 : 60, opacity: 0, duration: 0.8, delay: i * 0.15
+      })
+    })
+
+    gsap.utils.toArray('.bento-card').forEach((card, i) => {
+      gsap.from(card, {
+        scrollTrigger: { trigger: card, scroller: page, start: 'top 90%' },
+        scale: 0.8, opacity: 0, duration: 0.6, delay: i * 0.08
+      })
+    })
+
+    gsap.from('.section-title', {
+      scrollTrigger: { trigger: '.features-section', scroller: page, start: 'top 80%' },
+      y: 40, opacity: 0, duration: 0.8
+    })
+  }
+
+  // Carousel auto-play
+  let carouselIdx = 0
+  const carouselTrack = document.getElementById('carousel-track')
+  if (carouselTrack) {
+    setInterval(() => {
+      carouselIdx = (carouselIdx + 1) % 5
+      carouselTrack.style.transform = `translateX(-${carouselIdx * 100}%)`
+    }, 3500)
+  }
+
+  // Testimonials auto-play
+  let testimonialIdx = 0
+  setInterval(() => {
+    testimonialIdx = (testimonialIdx + 1) % 4
+    goToTestimonial(testimonialIdx)
+  }, 4000)
+}
+
+window.goToTestimonial = function(idx) {
+  document.querySelectorAll('.testimonial-card').forEach((c, i) => c.classList.toggle('active', i === idx))
+  document.querySelectorAll('.t-dot').forEach((d, i) => d.classList.toggle('active', i === idx))
+}
+
+window.scrollToFeatures = function() {
+  const page = document.getElementById('landing-page')
+  const section = document.getElementById('section-features')
+  if (page && section) page.scrollTo({ top: section.offsetTop, behavior: 'smooth' })
+}
+
+function _oldRenderLanding_UNUSED() {
+  // kept for reference only
+  const page = document.getElementById('landing-page')
+  if (!page) return
   page.innerHTML = `
     <div class="landing-bg-particles" id="particles-container"></div>
-    <div class="landing-logo-ring">
-      <img src="https://www.fju.edu.tw/static/img/logo_fju_en.png" class="landing-logo-img"
-        onerror="this.style.display='none'; this.parentNode.innerHTML='<span style=\\'font-size:2.5rem;\\'>🎓</span>'" />
-    </div>
-    <div class="landing-title">FJU Smart Hub</div>
-    <div class="landing-subtitle">輔仁大學校園智慧管理系統 v4.0</div>
-    <div class="landing-gold-line"></div>
     <div class="landing-features">
-      <div class="landing-feature-card">
-        <div class="landing-feature-icon">🗺️</div>
-        <div class="landing-feature-title">互動式校園地圖</div>
-        <div class="landing-feature-desc">Leaflet.js + 無障礙設施標記</div>
-      </div>
-      <div class="landing-feature-card">
-        <div class="landing-feature-icon">🤝</div>
-        <div class="landing-feature-title">AI 衝突協商</div>
-        <div class="landing-feature-desc">3分鐘介入・6分鐘強制處理</div>
-      </div>
-      <div class="landing-feature-card">
-        <div class="landing-feature-icon">📅</div>
-        <div class="landing-feature-title">玻璃行事曆</div>
-        <div class="landing-feature-desc">GSAP動畫・即時預約狀態</div>
-      </div>
-      <div class="landing-feature-card">
-        <div class="landing-feature-icon">⭐</div>
-        <div class="landing-feature-title">信用積分制</div>
-        <div class="landing-feature-desc">自動扣分・完整紀錄</div>
-      </div>
       <div class="landing-feature-card">
         <div class="landing-feature-icon">🔔</div>
         <div class="landing-feature-title">已讀回條</div>

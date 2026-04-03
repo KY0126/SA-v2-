@@ -1076,3 +1076,226 @@ select.form-control { cursor: pointer; }
 }
 .avatar-menu-item:hover { background: var(--gray-50); }
 .avatar-menu-item.danger { color: var(--red); }
+
+/* ═══════════════════════════════════════════════
+   ENHANCED LANDING PAGE - Full Scroll Design
+   ═══════════════════════════════════════════════ */
+
+/* Landing Page - make scrollable */
+#landing-page {
+  overflow-y: auto !important;
+  scroll-behavior: smooth;
+  flex-direction: column !important;
+  align-items: stretch !important;
+  justify-content: flex-start !important;
+  height: 100vh;
+}
+
+/* Hero Section */
+.landing-hero {
+  position: relative;
+  min-height: 100vh;
+  background: linear-gradient(135deg, var(--blue-dark) 0%, var(--blue) 55%, var(--blue-light) 100%);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  overflow: hidden; padding: 80px 20px 60px;
+}
+
+/* Activity Carousel Banner */
+.landing-carousel {
+  position: absolute; top: 0; left: 0; right: 0;
+  background: rgba(218,165,32,0.12); border-bottom: 1px solid rgba(218,165,32,0.3);
+  height: 44px; display: flex; align-items: center; overflow: hidden;
+  z-index: 10;
+}
+.carousel-track {
+  display: flex; width: 500%; transition: transform 0.6s cubic-bezier(0.4,0,0.2,1);
+}
+.carousel-slide {
+  flex: 0 0 20%; padding: 0 20px; color: rgba(255,255,255,0.95);
+  font-size: 0.82rem; display: flex; align-items: center; gap: 8px; white-space: nowrap;
+  justify-content: center;
+}
+.carousel-badge {
+  background: var(--gold); color: var(--blue-dark);
+  font-size: 0.72rem; font-weight: 700; padding: 2px 8px; border-radius: 10px;
+  flex-shrink: 0;
+}
+
+/* Hero Content */
+.hero-content {
+  display: flex; flex-direction: column; align-items: center; text-align: center;
+  z-index: 5; position: relative;
+}
+.hero-tagline {
+  color: rgba(255,255,255,0.8); font-size: 1rem; max-width: 500px;
+  line-height: 1.6; margin-bottom: 32px;
+}
+.hero-cta-group { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; }
+.hero-scroll-btn {
+  background: transparent; color: rgba(255,255,255,0.8);
+  border: 1px solid rgba(255,255,255,0.4); border-radius: 50px;
+  padding: 13px 28px; font-size: 0.9rem; cursor: pointer;
+  transition: all var(--transition);
+}
+.hero-scroll-btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
+
+/* Shiba mascot */
+.hero-shiba {
+  position: absolute; bottom: 60px; right: 40px;
+  font-size: 3rem; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+  animation: shiba-bounce 3s ease-in-out infinite;
+}
+@keyframes shiba-bounce {
+  0%,100% { transform: translateY(0) rotate(-5deg); }
+  50% { transform: translateY(-12px) rotate(5deg); }
+}
+
+/* Fixed Enter Button */
+.landing-enter-fixed {
+  position: sticky; bottom: 0; left: 0; right: 0; z-index: 100;
+  background: linear-gradient(to top, rgba(0,29,53,0.95) 60%, transparent);
+  padding: 20px; text-align: center; display: none;
+}
+
+/* Pulse animation on enter button */
+.landing-enter-btn.pulse {
+  animation: btn-pulse 2s ease-in-out infinite;
+}
+@keyframes btn-pulse {
+  0%,100% { box-shadow: 0 4px 20px rgba(218,165,32,0.4); }
+  50% { box-shadow: 0 4px 40px rgba(218,165,32,0.8), 0 0 60px rgba(218,165,32,0.3); }
+}
+
+/* Landing Sections */
+.landing-section {
+  padding: 80px 20px;
+  background: var(--white);
+}
+.landing-section.pain-section { background: #f8fafc; }
+.landing-section.features-section {
+  background: linear-gradient(180deg, #f8fafc 0%, var(--white) 100%);
+}
+.landing-section.testimonials-section { background: var(--white); }
+
+.section-inner { max-width: 1100px; margin: 0 auto; }
+.section-label {
+  display: inline-block; font-size: 0.78rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 2px;
+  color: var(--gold); border: 1px solid var(--gold);
+  padding: 4px 12px; border-radius: 20px; margin-bottom: 16px;
+}
+.section-title {
+  font-size: 2rem; font-weight: 800; color: var(--blue-dark);
+  margin-bottom: 16px; line-height: 1.2;
+}
+.section-subtitle {
+  font-size: 1rem; color: var(--gray-500); margin-bottom: 48px; max-width: 600px;
+}
+
+/* Pain Cards */
+.pain-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.pain-card {
+  background: var(--white); border-radius: var(--radius-lg);
+  padding: 32px 24px; box-shadow: var(--shadow-md);
+  border-top: 4px solid var(--blue); position: relative; overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.pain-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-lg); }
+.pain-icon { font-size: 2.5rem; margin-bottom: 16px; }
+.pain-card h3 { font-size: 1.05rem; font-weight: 700; color: var(--blue); margin-bottom: 10px; }
+.pain-card p { font-size: 0.85rem; color: var(--gray-500); line-height: 1.6; margin-bottom: 20px; }
+.pain-arrow {
+  font-size: 1.5rem; color: var(--gold); margin: 12px 0; display: block; text-align: center;
+  font-weight: 700;
+}
+.pain-solution {
+  background: linear-gradient(135deg, rgba(0,49,83,0.05), rgba(218,165,32,0.08));
+  border: 1px solid rgba(0,49,83,0.15); border-radius: var(--radius-sm);
+  padding: 10px 14px; font-size: 0.82rem; font-weight: 600; color: var(--blue);
+}
+
+/* Bento Grid */
+.features-bento {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: auto;
+  gap: 16px;
+}
+.bento-card {
+  background: var(--white); border-radius: var(--radius-lg);
+  padding: 24px; box-shadow: var(--shadow-sm);
+  border: 1px solid var(--gray-200);
+  transition: all 0.3s ease; cursor: pointer;
+}
+.bento-card:hover {
+  border-color: var(--blue); box-shadow: var(--shadow-md);
+  transform: translateY(-3px);
+}
+.bento-card.large {
+  grid-column: span 2;
+}
+.bento-icon { font-size: 2rem; margin-bottom: 12px; }
+.bento-content h3 {
+  font-size: 0.95rem; font-weight: 700; color: var(--blue); margin-bottom: 6px;
+}
+.bento-content p { font-size: 0.8rem; color: var(--gray-500); line-height: 1.5; }
+
+/* Testimonials */
+.testimonials-carousel { position: relative; min-height: 200px; }
+.testimonial-card {
+  display: none; background: var(--white);
+  border-radius: var(--radius-lg); padding: 40px;
+  box-shadow: var(--shadow-md); text-align: center; max-width: 700px; margin: 0 auto;
+  border-left: 4px solid var(--gold);
+}
+.testimonial-card.active { display: block; animation: testimonial-in 0.5s ease-out; }
+@keyframes testimonial-in { from { opacity:0; transform: scale(0.95); } to { opacity:1; transform: scale(1); } }
+.testimonial-avatar { font-size: 3rem; margin-bottom: 8px; }
+.testimonial-name { font-size: 0.9rem; font-weight: 700; color: var(--blue); margin-bottom: 16px; }
+.testimonial-text {
+  font-size: 1rem; color: var(--gray-700); line-height: 1.7;
+  font-style: italic; margin-bottom: 16px;
+}
+.testimonial-stars { color: var(--gold); font-size: 1.2rem; letter-spacing: 2px; }
+.testimonial-dots { display: flex; justify-content: center; gap: 8px; margin-top: 24px; }
+.t-dot {
+  width: 10px; height: 10px; border-radius: 50%;
+  background: var(--gray-300); cursor: pointer; transition: background 0.3s;
+}
+.t-dot.active { background: var(--blue); }
+
+/* News Ticker */
+.landing-news-ticker {
+  background: var(--blue-dark); color: var(--white);
+  padding: 14px 20px; display: flex; align-items: center; gap: 16px; overflow: hidden;
+}
+.ticker-label {
+  background: var(--gold); color: var(--blue-dark);
+  font-size: 0.75rem; font-weight: 700; padding: 4px 10px;
+  border-radius: 20px; flex-shrink: 0; white-space: nowrap;
+}
+.ticker-track {
+  display: flex; gap: 40px; animation: ticker-scroll 25s linear infinite; white-space: nowrap;
+}
+.ticker-item { font-size: 0.82rem; color: rgba(255,255,255,0.9); }
+@keyframes ticker-scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+/* Duplicate ticker items for seamless loop */
+.ticker-track::after {
+  content: ' 🏆 113學年下學期社團評鑑優良名單已公佈　⚠️ 焯炤館演講廳 4/8-4/14 空調維修暫停使用　📝 AI 時代創業論壇 4/25 報名倒數 3 天　🎓 幹部知能研習 5/3 開放報名，信用點數 +5　📦 器材借用系統升級，新增 GPS 定位追蹤功能　🔐 系統安全更新：已攔截 127 次異常登入嘗試';
+  color: rgba(255,255,255,0.9); font-size: 0.82rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .pain-cards { grid-template-columns: 1fr; }
+  .features-bento { grid-template-columns: repeat(2, 1fr); }
+  .bento-card.large { grid-column: span 2; }
+  .section-title { font-size: 1.5rem; }
+  .landing-title { font-size: 2.2rem !important; }
+  .hero-cta-group { flex-direction: column; align-items: center; }
+}
+@media (max-width: 480px) {
+  .features-bento { grid-template-columns: 1fr; }
+  .bento-card.large { grid-column: span 1; }
+}
